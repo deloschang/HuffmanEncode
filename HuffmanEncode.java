@@ -6,31 +6,52 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 
 
 public class HuffmanEncode{ 
-	private BufferedReader input;
+//	private BufferedReader input;
 	
-	public HuffmanEncode() throws FileNotFoundException{
-		BufferedReader input = 
-				new BufferedReader(new FileReader("/Users/deloschang/Documents/test.txt"));
+	private BufferedReader input;
+
+	public HuffmanEncode(){
+		
 	}
+	
 	
 	/*
 	 * Generates key value frequency from input string 
+	 * 
+	 * @return map with character as keys and character frequencies as integers
 	 */
-	public Map<String,Integer> GenFrequency() throws IOException{
-		Map<String, Integer> returnMap = new TreeMap<String, Integer>();
+	public Map<Character, Integer> GenFrequency() throws IOException{
+		Map<Character, Integer> returnMap = new HashMap<Character, Integer>();
 		
-		// read each character one at a time
-		while (input.read() != -1){
-			char character = (char)input.read();
+		BufferedReader input = new BufferedReader(new FileReader("/Users/deloschang/Documents/test.txt"));
+		
+		// Load the first character
+		int nextChar = input.read();
+		while (nextChar != -1){
+			// read each character one at a time
+			char character = (char)nextChar;
 			
+			// if character is in map already, add +1 
+			if (returnMap.containsKey(character)){
+				returnMap.put(character, returnMap.get(character) + 1);
+			} else { 
+				// otherwise, initialize
+				returnMap.put(character, 1);
+			}
+			
+			// load next character
+			nextChar = input.read();
 			
 		}
+		
+		input.close();
+		return returnMap;
 		
 	}
 	
@@ -55,7 +76,8 @@ public class HuffmanEncode{
 	public static void main(String[] args) throws IOException{
 //		System.out.println(getFilePath()); // find the filepath
 		HuffmanEncode encode = new HuffmanEncode();
-		System.out.println(encode.GenFrequency());
+		
+		System.out.println(encode.GenFrequency().toString());
 		
 	}
 	
