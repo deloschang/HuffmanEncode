@@ -1,17 +1,41 @@
 package PS4;
 
-
-public class BinaryTreeHuffman extends BinaryTree{
-	private char dataCharacter;
+/**
+ * 
+ * Binary Tree that stores two values
+ * one for character and one for frequency
+ * 
+ * @author Delos Chang 
+ * @param <E>
+ */
+public class BinaryTreeHuffman<Character> extends BinaryTree<Character>{
 	private int dataFrequency;
-
+	
 	/* 
 	 *  Constructs singleton tree
 	 *  storing two values: character and frequency
 	 */
-	public BinaryTreeHuffman(Object data) {
-		// TODO Auto-generated constructor stub
-		
+	public BinaryTreeHuffman(Character dataChar, int dataFrequency) {
+		super(dataChar);
+		this.setDataFrequency(dataFrequency);
 	}
+
+	public int getDataFrequency() {
+		return dataFrequency;
+	}
+
+	public void setDataFrequency(int dataFrequency) {
+		this.dataFrequency = dataFrequency;
+	}
+	
+	/* 
+	 * Overriding toString to show the char and character frequency
+	 * @see PS4.BinaryTree#toString()
+	 */
+	public String toString(){
+		return getValue() + " freq: " + dataFrequency;
+	}
+
+
 	
 }
