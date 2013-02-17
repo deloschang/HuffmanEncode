@@ -19,6 +19,17 @@ public class BinaryTreeHuffman<Character> extends BinaryTree<Character>{
 		super(dataChar);
 		this.setDataFrequency(dataFrequency);
 	}
+	
+	/* 
+	 *  Constructs tree with right/left branches
+	 *  storing two values: character and frequency
+	 */
+	public BinaryTreeHuffman(Character dataChar, int dataFrequency, 
+			BinaryTreeHuffman<Character> leftTree, BinaryTreeHuffman<Character> rightTree) {
+		super(dataChar, leftTree, rightTree);
+		this.setDataFrequency(dataFrequency);
+	}
+	
 
 	public int getDataFrequency() {
 		return dataFrequency;

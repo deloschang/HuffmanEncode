@@ -86,6 +86,24 @@ public class HuffmanEncode{
 		return pq;
 	}
 	
+	public PriorityQueue<BinaryTreeHuffman<Character>> buildTree(PriorityQueue<BinaryTreeHuffman<Character>> pq){
+		// remove two lowest frequency trees first
+		BinaryTreeHuffman<Character> lowFreqOne = pq.poll();
+		BinaryTreeHuffman<Character> lowFreqTwo = pq.poll();
+		BinaryTreeHuffman<Character> newTree;
+		
+		// sum of T1 and T2 frequencies
+		int sumFreq = lowFreqOne.getDataFrequency() + lowFreqTwo.getDataFrequency();
+		
+		// create new tree by attaching T1 and T2  to new root
+		newTree = new BinaryTreeHuffman<Character>(null, sumFreq, lowFreqOne, lowFreqTwo);
+		
+		// add back to priority queue
+		pq.add(newTree);
+		
+		return pq;
+	}
+	
 	/**
 	   * Puts up a fileChooser and gets path name for file to be opened.
 	   * Returns an empty string if the user clicks "cancel".
@@ -122,6 +140,15 @@ public class HuffmanEncode{
 		
 		System.out.println(pq);
 		
+		
+		// build the tree until there is 1 single code tree
+		// decompose properly later
+		PriorityQueue<BinaryTreeHuffman<Character>> pqNew = null;
+		while (pq.size() != 1){
+			pqNew = encode.buildTree(pq);
+		}
+		
+		System.out.println(pqNew);
 		
 		
 		
