@@ -1,9 +1,11 @@
 package PS4;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Map;
@@ -21,6 +23,9 @@ import javax.swing.JFileChooser;
 
 public class HuffmanEncode{ 
 //	private BufferedReader input;
+	public final static String READ_INPUT = "/Users/deloschang/Documents/test.txt";
+	public final static String COMPRESSED_PATH_NAME = "/Users/deloschang/Documents/testHuffmanCompress.txt";
+	public final static String DECOMPRESSED_PATH_NAME = "/Users/deloschang/Documents/testHuffmanDecompress.txt";
 	
 	public HuffmanEncode(){
 		
@@ -30,12 +35,12 @@ public class HuffmanEncode{
 	/*
 	 * Generates key value frequency from input string 
 	 * 
+	 * @param input the input to read characters from 
 	 * @return map with character as keys and character frequencies as integers
 	 */
-	public Map<Character, Integer> GenFrequency() throws IOException{
+	public Map<Character, Integer> GenFrequency(BufferedReader input) throws IOException{
 		Map<Character, Integer> returnMap = new HashMap<Character, Integer>();
 		
-		BufferedReader input = new BufferedReader(new FileReader("/Users/deloschang/Documents/test.txt"));
 		
 		// Load the first character
 		int nextChar = input.read();
@@ -56,7 +61,6 @@ public class HuffmanEncode{
 			
 		}
 		
-		input.close();
 		return returnMap;
 	}
 	
@@ -104,6 +108,7 @@ public class HuffmanEncode{
 		return pq;
 	}
 	
+	
 	/**
 	   * Puts up a fileChooser and gets path name for file to be opened.
 	   * Returns an empty string if the user clicks "cancel".
@@ -124,14 +129,44 @@ public class HuffmanEncode{
 			return "";
 	}
 	
+	public static void compress(Map<Character, String> codeMap) throws IOException{
+		BufferedReader writeInput = new BufferedReader(new FileReader(READ_INPUT));
+		BufferedBitWriter bitOutput = new BufferedBitWriter(COMPRESSED_PATH_NAME);
+		
+		int nextChar = writeInput.read();
+		
+		while (nextChar != -1){
+			// check nextChar against the codeMap
+			// retrieve the huffman string
+			char character = (char)nextChar;
+			String huffmanString = codeMap.get(character);
+			
+			// iterate through Huffman string and write the bit to the file
+			for (int i = 0; i < huffmanString.length(); i++){
+				int bit = Character.digit(huffmanString.charAt(i), 10);
+				bitOutput.writeBit(bit);
+			}
+			
+			nextChar = writeInput.read();
+		}
+		
+		bitOutput.close();
+		writeInput.close();
+	}
+	
+	
 	public static void main(String[] args) throws IOException{
 //		System.out.println(getFilePath()); // find the filepath
+		BufferedReader input = new BufferedReader(new FileReader(READ_INPUT));
+		
 		HuffmanEncode encode = new HuffmanEncode();
 		
 //		System.out.println(encode.GenFrequency().toString());
 		
 		// Generate character frequencies
-		Map<Character, Integer> frequencyMap = encode.GenFrequency();
+		Map<Character, Integer> frequencyMap = encode.GenFrequency(input);
+		input.close();
+		
 		System.out.println(frequencyMap);
 		
 		// fix to class static // 
@@ -149,6 +184,32 @@ public class HuffmanEncode{
 		}
 		
 		System.out.println(pqNew);
+		BinaryTreeHuffman<Character> codeTree = pq.peek();
+		
+		// Map the strings in a single traversal
+		Map<Character, String> codeMap = codeTree.mapCodes();
+		System.out.println(codeMap);
+		
+		// Use codeMap to compress the original text
+		compress(codeMap);
+		
+		// Use codeTree to decompress the compressed text
+		BufferedBitReader bitInput = new BufferedBitReader(HuffmanEncode.COMPRESSED_PATH_NAME);
+		BufferedWriter writeOutput =  new BufferedWriter(new FileWriter(HuffmanEncode.DECOMPRESSED_PATH_NAME));
+		
+		int firstBit = bitInput.readBit();
+		
+		while (firstBit != -1){
+			codeTree.decodeHuffman(bitInput, writeOutput, firstBit);
+			
+			firstBit = bitInput.readBit();
+		}
+		
+		bitInput.close();
+		writeOutput.close();
+		
+		
+		
 		
 		
 		

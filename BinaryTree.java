@@ -323,5 +323,6 @@ public class BinaryTree<E> {
 		System.out.println("Height of tree2 = " + tree2.height());
 		System.out.println("Fringe of tree2 =" + tree2.fringe());
 		System.out.println("tree and tree2 are equal? " + tree.equals(tree2));
-	}		
+	}
+
 }
