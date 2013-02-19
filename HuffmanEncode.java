@@ -16,20 +16,17 @@ import java.util.Set;
 import javax.swing.JFileChooser;
 
 /**
- * Huffman encodes text from a file 
+ * Huffman compresses text from a file 
+ * Can also decompress text from the file
  * 
  * @author Delos Chang
  */
 
 public class HuffmanEncode{ 
-//	private BufferedReader input;
-	public final static String READ_INPUT = "/Users/deloschang/Documents/test.txt";
-	public final static String COMPRESSED_PATH_NAME = "/Users/deloschang/Documents/testHuffmanCompress.txt";
-	public final static String DECOMPRESSED_PATH_NAME = "/Users/deloschang/Documents/testHuffmanDecompress.txt";
-	
-	public HuffmanEncode(){
-		
-	}
+	// File Names 
+	private final static String READ_INPUT = "/Users/deloschang/Documents/test.txt";
+	private final static String COMPRESSED_PATH_NAME = "/Users/deloschang/Documents/testHuffmanCompress.txt";
+	private final static String DECOMPRESSED_PATH_NAME = "/Users/deloschang/Documents/testHuffmanDecompress.txt";
 	
 	
 	/*
@@ -38,9 +35,8 @@ public class HuffmanEncode{
 	 * @param input the input to read characters from 
 	 * @return map with character as keys and character frequencies as integers
 	 */
-	public Map<Character, Integer> GenFrequency(BufferedReader input) throws IOException{
+	public static Map<Character, Integer> GenFrequency(BufferedReader input) throws IOException{
 		Map<Character, Integer> returnMap = new HashMap<Character, Integer>();
-		
 		
 		// Load the first character
 		int nextChar = input.read();
@@ -61,6 +57,7 @@ public class HuffmanEncode{
 			
 		}
 		
+		// Return the frequency Map 
 		return returnMap;
 	}
 	
@@ -154,22 +151,73 @@ public class HuffmanEncode{
 		writeInput.close();
 	}
 	
+	public static void decodeHuffman(BufferedBitReader bitInput, BufferedWriter writeOutput, int bit, 
+			BinaryTreeHuffman<Character> codeTree) throws IOException{
+		
+		// save root first
+//		BinaryTreeHuffman<Character> root = this;
+		
+//		System.out.println(bit);
+		if (codeTree.isLeaf()){
+			System.out.println(codeTree.getValue());
+			writeOutput.write(codeTree.getValue());
+			return;
+			
+			
+//			int nextBit = bitInput.readBit();
+//			System.out.println(nextBit);
+//			
+//			if (nextBit != -1){
+//				// go back to root and continue
+//				decodeHuffman(bitInput, writeOutput);
+//			} else { 
+//				bitInput.close();
+//				writeOutput.close();
+//				return;
+//			}
+			
+		}
+
+//		int nextBit = bitInput.readBit();
+//		System.out.println(nextBit);
+
+//		if (nextBit == 0){
+		if (bit == 0 ){
+			if (codeTree.getLeft().isInner()){
+				int nextBit = bitInput.readBit();
+				decodeHuffman(bitInput, writeOutput, nextBit, (BinaryTreeHuffman<Character>) codeTree.getLeft());
+			} else { 
+				decodeHuffman(bitInput, writeOutput, bit, (BinaryTreeHuffman<Character>) codeTree.getLeft());
+				
+			}
+		}
+
+//		if (nextBit == 1){
+		if (bit == 1 ){
+			if (codeTree.getRight().isInner()){
+				int nextBit = bitInput.readBit();
+//				((BinaryTreeHuffman<Character>)getRight()).decodeHuffman(bitInput, writeOutput, nextBit);
+				decodeHuffman(bitInput, writeOutput, nextBit, (BinaryTreeHuffman<Character>) codeTree.getRight());
+			} else { 
+//				((BinaryTreeHuffman<Character>)getRight()).decodeHuffman(bitInput, writeOutput, bit);
+				decodeHuffman(bitInput, writeOutput, bit, (BinaryTreeHuffman<Character>) codeTree.getRight());
+			}
+		}
+	}
+	
 	
 	public static void main(String[] args) throws IOException{
+		// Helper to find the file path
 //		System.out.println(getFilePath()); // find the filepath
-		BufferedReader input = new BufferedReader(new FileReader(READ_INPUT));
 		
+		BufferedReader input = new BufferedReader(new FileReader(READ_INPUT));
 		HuffmanEncode encode = new HuffmanEncode();
 		
-//		System.out.println(encode.GenFrequency().toString());
-		
 		// Generate character frequencies
-		Map<Character, Integer> frequencyMap = encode.GenFrequency(input);
+		Map<Character, Integer> frequencyMap = GenFrequency(input);
+		System.out.println(frequencyMap);
 		input.close();
 		
-		System.out.println(frequencyMap);
-		
-		// fix to class static // 
 		// Create singleton trees and order in heap
 		PriorityQueue<BinaryTreeHuffman<Character>> pq = encode.createHeap(frequencyMap);
 		
@@ -197,10 +245,15 @@ public class HuffmanEncode{
 		BufferedBitReader bitInput = new BufferedBitReader(HuffmanEncode.COMPRESSED_PATH_NAME);
 		BufferedWriter writeOutput =  new BufferedWriter(new FileWriter(HuffmanEncode.DECOMPRESSED_PATH_NAME));
 		
+		
 		int firstBit = bitInput.readBit();
 		
 		while (firstBit != -1){
-			codeTree.decodeHuffman(bitInput, writeOutput, firstBit);
+//			codeTree.decodeHuffman(bitInput, writeOutput, firstBit);
+			decodeHuffman(bitInput, writeOutput, firstBit, codeTree);
+			
+			//
+//			writeOutput.write(codeTree.getValue());
 			
 			firstBit = bitInput.readBit();
 		}

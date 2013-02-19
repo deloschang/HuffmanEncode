@@ -87,58 +87,6 @@ public class BinaryTreeHuffman<Character> extends BinaryTree<Character>{
 	}
 	
 	
-	public void decodeHuffman(BufferedBitReader bitInput, BufferedWriter writeOutput, int bit) throws IOException{
-		
-		// save root first
-//		BinaryTreeHuffman<Character> root = this;
-		
-//		System.out.println(bit);
-		if (isLeaf()){
-			System.out.println(this.getValue());
-			// write the output
-			// ?????
-			writeOutput.write(getValue());
-			return;
-			
-			
-//			int nextBit = bitInput.readBit();
-//			System.out.println(nextBit);
-//			
-//			if (nextBit != -1){
-//				// go back to root and continue
-//				decodeHuffman(bitInput, writeOutput);
-//			} else { 
-//				bitInput.close();
-//				writeOutput.close();
-//				return;
-//			}
-			
-		}
-
-//		int nextBit = bitInput.readBit();
-//		System.out.println(nextBit);
-
-//		if (nextBit == 0){
-		if (bit == 0 ){
-			if (getLeft().isInner()){
-				int nextBit = bitInput.readBit();
-				((BinaryTreeHuffman<Character>)getLeft()).decodeHuffman(bitInput, writeOutput, nextBit);
-			} else { 
-				((BinaryTreeHuffman<Character>)getLeft()).decodeHuffman(bitInput, writeOutput, bit);
-				
-			}
-		}
-
-//		if (nextBit == 1){
-		if (bit == 1 ){
-			if (getRight().isInner()){
-				int nextBit = bitInput.readBit();
-				((BinaryTreeHuffman<Character>)getRight()).decodeHuffman(bitInput, writeOutput, nextBit);
-			} else { 
-				((BinaryTreeHuffman<Character>)getRight()).decodeHuffman(bitInput, writeOutput, bit);
-			}
-		}
-	}
 	
 	/* 
 	 * Overriding toString to show the char and character frequency
