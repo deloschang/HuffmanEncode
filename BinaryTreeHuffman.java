@@ -12,7 +12,7 @@ import java.util.Map;
  * one for character and one for frequency
  * 
  * @author Delos Chang 
- * @param <E>
+ * @param <E> generic type
  */
 public class BinaryTreeHuffman<Character> extends BinaryTree<Character>{
 	private int dataFrequency;
@@ -37,10 +37,16 @@ public class BinaryTreeHuffman<Character> extends BinaryTree<Character>{
 	}
 	
 
+	/* 
+	 *  Return the data frequency
+	 */
 	public int getDataFrequency() {
 		return dataFrequency;
 	}
 
+	/* 
+	 *  Set the data frequency
+	 */
 	public void setDataFrequency(int dataFrequency) {
 		this.dataFrequency = dataFrequency;
 	}
@@ -67,6 +73,9 @@ public class BinaryTreeHuffman<Character> extends BinaryTree<Character>{
 	
 	/*
 	 * Recursive helper that traverses tree to Huffman encoded strings
+	 * 
+	 * @param currentCode existing string of bits 
+	 * @param codeMap map to use to decode characters
 	 */
 	public void traverseTree(String currentCode, Map<Character, String> codeMap){
 		

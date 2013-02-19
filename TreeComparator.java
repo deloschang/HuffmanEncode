@@ -8,7 +8,7 @@ import java.util.Comparator;
  * implementing the Comparator interface
  * 
  * @author Delos Chang 
- * @param <E>
+ * @param <E> generic type
  */
 
 public class TreeComparator<E> implements Comparator<BinaryTreeHuffman<E>>{

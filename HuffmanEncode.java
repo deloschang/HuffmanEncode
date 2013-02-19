@@ -23,10 +23,11 @@ import javax.swing.JFileChooser;
  */
 
 public class HuffmanEncode{ 
-	// File Names 
-	private final static String READ_INPUT = "/Users/deloschang/Documents/test.txt";
-	private final static String COMPRESSED_PATH_NAME = "/Users/deloschang/Documents/testHuffmanCompress.txt";
-	private final static String DECOMPRESSED_PATH_NAME = "/Users/deloschang/Documents/testHuffmanDecompress.txt";
+	// Instance Variable File Names 
+//	private final static String READ_INPUT = "/Users/deloschang/Documents/test.txt";
+	private final static String READ_INPUT = "/Users/deloschang/Documents/eclipseworkspace/cs10proj/src/PS4/WarAndPeace.txt";
+	private final static String COMPRESSED_PATH_NAME = "/Users/deloschang/Documents/warCompress.txt";
+	private final static String DECOMPRESSED_PATH_NAME = "/Users/deloschang/Documents/warDecompress.txt";
 	
 	
 	/*
@@ -61,14 +62,16 @@ public class HuffmanEncode{
 		return returnMap;
 	}
 	
-	public PriorityQueue<BinaryTreeHuffman<Character>> createHeap(Map<Character, Integer> frequencyMap){
-		// 1st parameter is initial size
-		// 2nd parameter is a comparator
-		
+	/*
+	 * Creates priority queue heap from the frequency map
+	 * 
+	 * @param frequencyMap frequency map of characters
+	 * @return priority queue as a heap from the map
+	 */
+	public static PriorityQueue<BinaryTreeHuffman<Character>> createHeap(Map<Character, Integer> frequencyMap){
 		Comparator<BinaryTreeHuffman<Character>> comparator = new TreeComparator();
 		
 		PriorityQueue<BinaryTreeHuffman<Character>> pq = 
-				// initial size?
 				new PriorityQueue<BinaryTreeHuffman<Character>>(10, comparator);
 		
 		Set<Character> keySet = frequencyMap.keySet();
@@ -87,7 +90,13 @@ public class HuffmanEncode{
 		return pq;
 	}
 	
-	public PriorityQueue<BinaryTreeHuffman<Character>> buildTree(PriorityQueue<BinaryTreeHuffman<Character>> pq){
+	/*
+	 * Help combine code trees
+	 * 
+	 * @param pq priority queue of heap made from createHeap
+	 * @return priority queue with new combined trees
+	 */
+	public static PriorityQueue<BinaryTreeHuffman<Character>> buildTree(PriorityQueue<BinaryTreeHuffman<Character>> pq){
 		// remove two lowest frequency trees first
 		BinaryTreeHuffman<Character> lowFreqOne = pq.poll();
 		BinaryTreeHuffman<Character> lowFreqTwo = pq.poll();
@@ -110,10 +119,10 @@ public class HuffmanEncode{
 	   * Puts up a fileChooser and gets path name for file to be opened.
 	   * Returns an empty string if the user clicks "cancel".
 	   * 
+	   * @author Prof. Drysdale
 	   * @return path name of the file chosen	
 	   */
 	public static String getFilePath() {
-		
 		//Create a file chooser
 		JFileChooser fc = new JFileChooser();
 
@@ -126,6 +135,11 @@ public class HuffmanEncode{
 			return "";
 	}
 	
+	/*
+	 * Compress the text
+	 * 
+	 * @param codeMap Use the codemap to write text into bits
+	 */
 	public static void compress(Map<Character, String> codeMap) throws IOException{
 		BufferedReader writeInput = new BufferedReader(new FileReader(READ_INPUT));
 		BufferedBitWriter bitOutput = new BufferedBitWriter(COMPRESSED_PATH_NAME);
@@ -151,37 +165,24 @@ public class HuffmanEncode{
 		writeInput.close();
 	}
 	
+	/*
+	 * Decompress the text
+	 * 
+	 * @param bitInput    input to read from
+	 * @param writeOutput output to write to
+	 * @param bit current bit to look at 
+	 * @param codeTree  codetree to decode with
+	 */
 	public static void decodeHuffman(BufferedBitReader bitInput, BufferedWriter writeOutput, int bit, 
 			BinaryTreeHuffman<Character> codeTree) throws IOException{
 		
-		// save root first
-//		BinaryTreeHuffman<Character> root = this;
-		
-//		System.out.println(bit);
 		if (codeTree.isLeaf()){
 			System.out.println(codeTree.getValue());
 			writeOutput.write(codeTree.getValue());
 			return;
-			
-			
-//			int nextBit = bitInput.readBit();
-//			System.out.println(nextBit);
-//			
-//			if (nextBit != -1){
-//				// go back to root and continue
-//				decodeHuffman(bitInput, writeOutput);
-//			} else { 
-//				bitInput.close();
-//				writeOutput.close();
-//				return;
-//			}
-			
 		}
 
-//		int nextBit = bitInput.readBit();
-//		System.out.println(nextBit);
-
-//		if (nextBit == 0){
+		// if 0, go to left tree
 		if (bit == 0 ){
 			if (codeTree.getLeft().isInner()){
 				int nextBit = bitInput.readBit();
@@ -192,14 +193,12 @@ public class HuffmanEncode{
 			}
 		}
 
-//		if (nextBit == 1){
+		// if 1, go to right tree
 		if (bit == 1 ){
 			if (codeTree.getRight().isInner()){
 				int nextBit = bitInput.readBit();
-//				((BinaryTreeHuffman<Character>)getRight()).decodeHuffman(bitInput, writeOutput, nextBit);
 				decodeHuffman(bitInput, writeOutput, nextBit, (BinaryTreeHuffman<Character>) codeTree.getRight());
 			} else { 
-//				((BinaryTreeHuffman<Character>)getRight()).decodeHuffman(bitInput, writeOutput, bit);
 				decodeHuffman(bitInput, writeOutput, bit, (BinaryTreeHuffman<Character>) codeTree.getRight());
 			}
 		}
@@ -211,61 +210,53 @@ public class HuffmanEncode{
 //		System.out.println(getFilePath()); // find the filepath
 		
 		BufferedReader input = new BufferedReader(new FileReader(READ_INPUT));
-		HuffmanEncode encode = new HuffmanEncode();
 		
 		// Generate character frequencies
 		Map<Character, Integer> frequencyMap = GenFrequency(input);
+		System.out.println("Frequency Map:");
 		System.out.println(frequencyMap);
+		System.out.println("\n");
 		input.close();
 		
 		// Create singleton trees and order in heap
-		PriorityQueue<BinaryTreeHuffman<Character>> pq = encode.createHeap(frequencyMap);
-		
+		PriorityQueue<BinaryTreeHuffman<Character>> pq = createHeap(frequencyMap);
+		System.out.println("Priority Queue as Heap: ");
 		System.out.println(pq);
+		System.out.println("\n");
 		
 		
-		// build the tree until there is 1 single code tree
-		// decompose properly later
+		// Combine tree until there is 1 single code tree
 		PriorityQueue<BinaryTreeHuffman<Character>> pqNew = null;
 		while (pq.size() != 1){
-			pqNew = encode.buildTree(pq);
+			pqNew = buildTree(pq);
 		}
 		
-		System.out.println(pqNew);
-		BinaryTreeHuffman<Character> codeTree = pq.peek();
+		// Grab the newly created codeTree
+		BinaryTreeHuffman<Character> codeTree = pqNew.peek();
 		
 		// Map the strings in a single traversal
 		Map<Character, String> codeMap = codeTree.mapCodes();
+		System.out.println("Code Map");
 		System.out.println(codeMap);
+		System.out.println("\n");
 		
-		// Use codeMap to compress the original text
+		// Compress original text using the code map
 		compress(codeMap);
 		
 		// Use codeTree to decompress the compressed text
 		BufferedBitReader bitInput = new BufferedBitReader(HuffmanEncode.COMPRESSED_PATH_NAME);
 		BufferedWriter writeOutput =  new BufferedWriter(new FileWriter(HuffmanEncode.DECOMPRESSED_PATH_NAME));
 		
-		
 		int firstBit = bitInput.readBit();
 		
+		// Loop through and decode the text
 		while (firstBit != -1){
-//			codeTree.decodeHuffman(bitInput, writeOutput, firstBit);
 			decodeHuffman(bitInput, writeOutput, firstBit, codeTree);
-			
-			//
-//			writeOutput.write(codeTree.getValue());
-			
 			firstBit = bitInput.readBit();
 		}
 		
 		bitInput.close();
 		writeOutput.close();
-		
-		
-		
-		
-		
-		
 		
 		
 	}
