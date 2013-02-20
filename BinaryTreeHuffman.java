@@ -60,7 +60,7 @@ public class BinaryTreeHuffman<Character> extends BinaryTree<Character>{
 		// get code tree
 		// don't traverse an emptyTree
 		
-		if (getLeft() == null && getRight() == null)
+		if (this == null || getLeft() == null && getRight() == null)
 			return null;
 		
 		Map<Character, String> codeMap = new HashMap<Character, String>();
